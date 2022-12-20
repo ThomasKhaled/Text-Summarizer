@@ -1,0 +1,429 @@
+PageManager:
+    MainPage:
+    TextPage:
+    FilePage:
+    UrlPage:
+
+#:import utils kivy.utils
+<Button>
+    background_normal: ''
+    background_color: utils.get_color_from_hex('#969997')
+    pos_hint: {'center_x':0.5}
+    size_hint: (0.5,1)
+    bold: True
+    font_size: '15'
+
+
+
+
+############################################################################################################################
+<MainPage>:
+    name: "mainPage"    # this is like an ID for the page
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+
+
+        padding: 50
+        spacing: 20
+
+        Label:
+            markup: True
+            text: "                       [color=#f1c40f]Summarize Enterprise[/color] \n\n [color=#ffffff][size=20]Welcome to Summarize Enterprise, Please select one of the following options[/color][/size] "
+
+            #Background color properties##################
+
+            canvas.before:
+                Color:
+                    rgba:(52/255.0, 73/255.0, 94/255.0, 1)
+
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [58]
+
+            pos_hint: {'center_x':0.5}
+            size_hint:(0.5,1)
+
+
+            ###########################################
+            #Text properties################
+            color:(241, 196, 15)
+            bold: True
+            font_size: '32'
+            ###########################################
+
+        Button:
+            text: "Summarize by Written Text"
+            on_release:
+                root.manager.current = "textPage"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "Summarize by Uploaded File or Video"
+            on_release:
+                root.manager.current = "filePage"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "Summarize by Website URL"
+            on_release:
+                root.manager.current = "urlPage"
+                root.manager.transition.direction = "left"
+
+############################################################################################################################
+<TextPage>:
+    layout: userWrittenText
+    name: "textPage"    # this is like an ID for the page
+    GridLayout:
+        size: root.width, root.height
+        cols: 2
+
+        padding: 20
+        spacing: 10
+
+        # text box where user writes what he/she wants to summarize
+        TextInput:
+            id: userWrittenText
+            multiline:True
+            color: (0,0,0,0)
+            pos_hint: {'center_x':0.5}
+            size_hint:(0.5,7)
+            #size_hint_y:None
+            #width: 300
+            #height: 450
+        ############################################################
+
+        # label where summarized version appears
+        TextInput:
+            id: summarized_label_id
+            multiline:True
+            foreground_color: (1,1,1)
+            pos_hint: {'center_x':0.5}
+            size_hint:(0.5,7)
+            background_normal:'' #to make color better
+            background_color: utils.get_color_from_hex('#000000')
+            #size_hint_y:None
+            #width: 300
+            #height: 450
+        #############################################################
+        GridLayout:
+            size: root.width, root.height
+            cols: 2
+
+            padding: 20
+            spacing: 20
+            Label:
+                id: chooseID
+                text: "Please choose How much compression \n you would like to apply on your text"
+                canvas.before:
+                    Color:
+                        rgba:(1, 1, 1,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                pos_hint: {'center_x':0.5}
+                size_hint:(1,5)
+                #size_hint_y:None
+                #height: 50
+                #width: 200
+                bold: True
+                color: (0,0,0)
+
+            #Spinner:
+            #    id: compressionSpinner_ID
+            #    text: "Compression Rate"
+            #    values: ["25%","50%","75%","100%"]
+            #    on_text: root.compression_Rate_Picked(compressionSpinner_ID.text)
+            #    size_hint_y:None
+            #    height: 50
+            #    width: 200
+            #    bold: True
+            #    color: (0,0,0)
+
+            BoxLayout:
+                Slider:
+                    id: slider
+                    min: 10
+                    max: 100
+                    step: 1
+                    orientation: 'horizontal'
+
+                Label:
+                    text: str(slider.value)
+
+
+        #######################################################################
+        GridLayout:
+            size: root.width, root.height
+            cols: 2
+
+            padding: 20
+            spacing: 20
+
+            Label:
+                text: "Compression Ratio"
+                canvas.before:
+                    Color:
+                        rgba:(0, 0, 0,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                pos_hint: {'center_x':0.5}
+                size_hint:(1,5)
+
+            Label:
+                id: compression_Ratio_Label_ID
+                text: ""
+                canvas.before:
+                    Color:
+                        rgba:(0, 0, 0, 1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                color: (1,1,1)
+                pos_hint: {'center_x':0.5}
+                size_hint:(1,5)
+
+        ##############################################3
+        Button:
+            text: "Summarize"
+            on_press: root.Summarize()
+            pos_hint: {'center_x':0.5}
+            size_hint:(1,0.5)
+        ##############################################3
+        Button:
+            text: "Back to the Main Page"
+            on_release:
+                root.manager.current = "mainPage"
+                root.manager.transition.direction = "right"
+
+                userWrittenText.text = ""
+                summarized_label_id.text = ""
+                compression_Ratio_Label_ID.text = ""
+
+            pos_hint: {'center_x':0.5}
+            size_hint:(1,0.5)
+
+
+############################################################################################################################
+<FilePage>:
+    id: filePage_ID
+    name: "filePage"    # this is like an ID for the page
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+
+
+        padding: 50
+        spacing: 10
+        ###################################################################
+        FileChooserIconView:
+            id: fileChooser
+            path:"C:/Users/Ramez/PycharmProjects/GP"
+            on_selection: filePage_ID.viewselecteFile(fileChooser.selection)
+
+
+        ###################################################################
+
+        ###################################################################
+        GridLayout:
+            size: root.width, root.height
+            padding:20
+            spacing:20
+            cols: 2
+            Label:
+                text: "Your selected file is: "
+                canvas.before:
+                    Color:
+                        rgba:(1, 1, 1,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                size_hint_y:None
+                height: 50
+                width: 80
+                bold: True
+                color: (0,0,0)
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+            TextInput:
+                id: fileSelectedtxt
+                multiline:False
+                color: (0,0,0,0)
+                font_size: '20'
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+        ###################################################################
+        # start end page and video
+        ###################################################################
+            Label:
+                text: "Please determine the number of the start page: "
+                canvas.before:
+                    Color:
+                        rgba:(1, 1, 1,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                size_hint_y:None
+                height: 50
+                width: 80
+                bold: True
+                color: (0,0,0)
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+            TextInput:
+                id: startPagePDFtext
+                multiline:False
+                color: (0,0,0,0)
+                font_size: '20'
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+            Label:
+                text: "Please determine the number of the end page: "
+                canvas.before:
+                    Color:
+                        rgba:(1, 1, 1,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                size_hint_y:None
+                height: 50
+                width: 80
+                bold: True
+                color: (0,0,0)
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+            TextInput:
+                id: endPagePDFtext
+                multiline:False
+                color: (0,0,0,0)
+                font_size: '20'
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+
+
+            Button:
+                text: "Back to the Main Page"
+                on_release:
+                    root.manager.current = "mainPage"
+                    root.manager.transition.direction = "right"
+                    fileSelectedtxt.text = ""
+                    startPagePDFtext.text = ""
+                    endPagePDFtext.text = ""
+                    checkbox.active = False
+                    fileChooser.selection = ""
+
+            Button:
+                text: "Extract Text"
+                on_press: root.selectedFile(checkbox.active, fileChooser.selection, startPagePDFtext.text, endPagePDFtext.text)
+                on_release:
+                    root.manager.current = "textPage"
+                    root.manager.transition.direction = "left"
+                    fileSelectedtxt.text = ""
+                    startPagePDFtext.text = ""
+                    endPagePDFtext.text = ""
+                    checkbox.active = False
+                    fileChooser.selection = ""
+            Label:
+                text: "Please check this box if what you selected is a video --> "
+                canvas.before:
+                    Color:
+                        rgba:(1, 1, 1,1)
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [30]
+                size_hint_y:None
+                height: 50
+                width: 80
+                bold: True
+                color: (0,0,0)
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+            CheckBox:
+                id: checkbox
+                color: (1,1,1,1)
+                #on_active: root.playVideo(self)
+                pos_hint: {'center_x':0.5}
+                size_hint:(0.5,1)
+
+
+
+############################################################################################################################
+<UrlPage>:
+    id: UrlPage_ID
+    name: "urlPage"    # this is like an ID for the page
+    GridLayout:
+
+        size: root.width, root.height
+        cols: 2
+
+        padding: 200
+        spacing: 50
+
+        Label:
+            text: "Please copy and paste \n the URL of the site you want to summarize here --->"
+            canvas.before:
+                Color:
+                    rgba:(1, 1, 1,1)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [30]
+            pos_hint: {'center_x':0.5}
+            size_hint:(0.5,1)
+            bold: True
+            color: (0,0,0)
+
+        TextInput:
+            id: urltxt
+            multiline:False
+            color: (0,0,0,0)
+            font_size: '32'
+            pos_hint: {'center_x':0.5}
+            size_hint:(0.5,1)
+
+
+        Button:
+            text: "Back to the Main Page"
+            on_release:
+                root.manager.current = "mainPage"
+                root.manager.transition.direction = "right"
+
+
+        Button:
+            text: "Extract Text from URL"
+            on_release:
+                root.manager.current = "textPage"
+                root.manager.transition.direction = "left"
+                UrlPage_ID.UserUrl(urltxt.text)
+
+
+
+
+############################################################################################################################
+
+<RoundedButton@Button>
+    background_color: (0,0,0,0)
+    background_normal: ''
+    canvas.before:
+        Color:
+            rgba:(150/255, 153/255, 151/255,1)
+
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [58]
